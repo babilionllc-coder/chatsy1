@@ -1,17 +1,54 @@
-# Ai chatsy 7
+# Chatsy - AI Chat Application
 
-Flutter SDK version :- 3.29.3
-git : https://KmphitechMain:kcDurZhtUQ8a4ctA7CTw@bitbucket.org/kmphitech/aichatsy7.git
-figma : https://www.figma.com/design/e3XJpP7Ny2nmYXGQNnjQmS/Ai-Chatsy?node-id=3056-207&t=6ohq9rDY9Ytbfbr5-0
-Dev : Bhumit Sabhaya
-Postman : https://api.postman.com/collections/27359853-acfe6bbb-dbd6-411a-a982-c348ac527c0a?access_key=PMAT-01J6HCASEQ1269YK9YWWTG3VG2
-Trello: https://trello.com/invite/b/667d4623ced2f82444a648d8/ATTI381e9b2d63dcfe3f3a131fe7359cc1981C8169B2/ai-chatsy-phase-6
-Admin Panel:
+A comprehensive AI-powered chat application built with Flutter, featuring multiple AI models, image generation, document summarization, and voice capabilities.
 
-JKS Details:
-Key alias: aichatsy
-Key store password: Aichatsy@1234
-JKS Path: android/jks/aichatsy_jks.jks 
-DeepSeek api. “sk-3dceb07cd15f4c2989df9c1be0f453ca"
+## 📱 Features
 
-also please update my elevenlabs api key sk_1ec19e65afcc5ae1fa2c23b5caa5edb444bce41c665f8720
+- **Multi-AI Chat**: GPT-4, Gemini, DeepSeek integration
+- **Image Generation**: AI-powered image creation
+- **Document Summarization**: PDF and website summarization
+- **Voice Features**: Speech-to-text and text-to-speech
+- **Real-time Web Search**: Live search capabilities
+- **Translation**: Multi-language support
+- **In-app Purchases**: Premium features with AppVestor
+
+## 🛠️ Technical Details
+
+- **Framework**: Flutter 3.29.3
+- **State Management**: GetX
+- **Platforms**: Android, iOS, Web
+- **Package**: `com.aichatsy.app`
+- **Version**: 1.0.0+1
+
+## 🔧 Setup
+
+1. Clone the repository
+2. Run `flutter pub get`
+3. Configure Firebase (see `firebase.json`)
+4. Set up API keys in environment variables
+5. Run `flutter run`
+
+## 📁 Project Structure
+
+```
+lib/
+├── app/
+│   ├── modules/          # Feature modules
+│   ├── common_widget/    # Reusable widgets
+│   ├── helper/          # Utilities and constants
+│   └── routes/           # App routing
+├── assets/              # Images, fonts, animations
+└── service/             # API services
+```
+
+## 🔐 Security
+
+**Important**: API keys and sensitive credentials should be stored in environment variables or secure configuration files, not in the codebase.
+
+## 👨‍💻 Developer
+
+Developed by Bhumit Sabhaya
+
+## 📄 License
+
+Private project - All rights reserved
