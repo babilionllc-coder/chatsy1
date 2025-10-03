@@ -1,0 +1,13 @@
+{
+  "status": true,
+  "message": "Registration successful",
+  "data": {
+    "user": {
+      "id": "mock_user_456",
+      "email": "new@example.com",
+      "name": "New User"
+    },
+    "token": "mock_token_456"
+  }
+}
+

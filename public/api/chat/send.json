@@ -1,0 +1,9 @@
+{
+  "status": true,
+  "message": "Message sent successfully",
+  "data": {
+    "chatId": "chat_123",
+    "response": "Hello! I'm your AI assistant powered by Firebase!"
+  }
+}
+

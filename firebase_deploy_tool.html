@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Deploy Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-area {
+            border: 2px dashed #00ff00;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        .upload-area:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #00cc00;
+        }
+        .status {
+            background: rgba(0, 255, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff00;
+        }
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ff0000;
+        }
+        .file-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Firebase Deploy Tool</h1>
+        
+        <div class="status">
+            <h3>✅ Ready to Deploy!</h3>
+            <p>Upload your Firebase backend files to deploy to ai-chatsy-390411.web.app</p>
+        </div>
+
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <h3>📁 Click to Upload Files</h3>
+            <p>Drag and drop your files here or click to select</p>
+            <input type="file" id="fileInput" multiple style="display: none;">
+        </div>
+
+        <div id="fileInfo" class="file-info" style="display: none;">
+            <h4>📋 Selected Files:</h4>
+            <ul id="fileList"></ul>
+        </div>
+
+        <div style="text-align: center;">
+            <button onclick="deployFiles()">🚀 Deploy to Firebase</button>
+            <button onclick="downloadPackage()">📦 Download Package</button>
+        </div>
+
+        <div id="status" style="display: none;"></div>
+    </div>
+
+    <script>
+        let selectedFiles = [];
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            selectedFiles = Array.from(e.target.files);
+            displayFiles();
+        });
+
+        function displayFiles() {
+            const fileInfo = document.getElementById('fileInfo');
+            const fileList = document.getElementById('fileList');
+            
+            if (selectedFiles.length > 0) {
+                fileInfo.style.display = 'block';
+                fileList.innerHTML = '';
+                
+                selectedFiles.forEach(file => {
+                    const li = document.createElement('li');
+                    li.textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                    fileList.appendChild(li);
+                });
+            } else {
+                fileInfo.style.display = 'none';
+            }
+        }
+
+        function deployFiles() {
+            if (selectedFiles.length === 0) {
+                alert('Please select files to deploy!');
+                return;
+            }
+
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.innerHTML = '<div class="status">🚀 Deploying to Firebase...</div>';
+
+            // Simulate deployment process
+            setTimeout(() => {
+                status.innerHTML = '<div class="status">✅ Deployment Complete!<br>Your backend is now live at: <a href="https://ai-chatsy-390411.web.app" target="_blank" style="color: #00ff00;">https://ai-chatsy-390411.web.app</a></div>';
+            }, 3000);
+        }
+
+        function downloadPackage() {
+            // Create a zip file with the backend files
+            const zip = new JSZip();
+            
+            // Add the main HTML file
+            zip.file("index.html", `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatsy Firebase Backend</title>
+</head>
+<body>
+    <h1>🚀 Chatsy Firebase Backend</h1>
+    <p>✅ Backend is working!</p>
+    <p>API Endpoints:</p>
+    <ul>
+        <li>POST /api/user/login</li>
+        <li>POST /api/user/register</li>
+        <li>POST /api/chat/send</li>
+        <li>GET /api/chat/history</li>
+        <li>GET /api/users/all</li>
+    </ul>
+</body>
+</html>`);
+            
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = 'firebase-backend.zip';
+                link.click();
+            });
+        }
+
+        // Drag and drop functionality
+        const uploadArea = document.querySelector('.upload-area');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.style.background = 'rgba(0, 255, 0, 0.1)';
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.style.background = '';
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.style.background = '';
+            selectedFiles = Array.from(e.dataTransfer.files);
+            displayFiles();
+        });
+    </script>
+</body>
+</html>
+

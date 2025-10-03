@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Storage Upload Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-area {
+            border: 2px dashed #00ff00;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        .upload-area:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #00cc00;
+        }
+        .status {
+            background: rgba(0, 255, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff00;
+        }
+        .progress {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            background: #00ff00;
+            height: 20px;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Firebase Storage Upload Tool</h1>
+        
+        <div class="status">
+            <h3>✅ Ready to Upload!</h3>
+            <p>Upload your Firebase backend files to Firebase Storage</p>
+            <p><strong>Project:</strong> ai-chatsy-390411</p>
+        </div>
+
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <h3>📁 Click to Upload Files</h3>
+            <p>Select your backend files (HTML, JS, CSS)</p>
+            <input type="file" id="fileInput" multiple style="display: none;">
+        </div>
+
+        <div id="fileInfo" style="display: none;">
+            <h4>📋 Selected Files:</h4>
+            <ul id="fileList"></ul>
+        </div>
+
+        <div style="text-align: center;">
+            <button onclick="uploadFiles()">🚀 Upload to Firebase Storage</button>
+            <button onclick="generateDownloadLinks()">🔗 Generate Download Links</button>
+        </div>
+
+        <div id="progress" class="progress" style="display: none;">
+            <h4>📊 Upload Progress:</h4>
+            <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+            <p id="progressText">0%</p>
+        </div>
+
+        <div id="status" style="display: none;"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            authDomain: "ai-chatsy-390411.firebaseapp.com",
+            projectId: "ai-chatsy-390411",
+            storageBucket: "ai-chatsy-390411.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456789"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        let selectedFiles = [];
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            selectedFiles = Array.from(e.target.files);
+            displayFiles();
+        });
+
+        function displayFiles() {
+            const fileInfo = document.getElementById('fileInfo');
+            const fileList = document.getElementById('fileList');
+            
+            if (selectedFiles.length > 0) {
+                fileInfo.style.display = 'block';
+                fileList.innerHTML = '';
+                
+                selectedFiles.forEach(file => {
+                    const li = document.createElement('li');
+                    li.textContent = `${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                    fileList.appendChild(li);
+                });
+            } else {
+                fileInfo.style.display = 'none';
+            }
+        }
+
+        async function uploadFiles() {
+            if (selectedFiles.length === 0) {
+                alert('Please select files to upload!');
+                return;
+            }
+
+            const progress = document.getElementById('progress');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const status = document.getElementById('status');
+
+            progress.style.display = 'block';
+            status.style.display = 'block';
+            status.innerHTML = '<div class="status">🚀 Uploading files to Firebase Storage...</div>';
+
+            let uploadedFiles = [];
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                const fileRef = ref(storage, `backend/${crypto.randomUUID()}-${file.name}`);
+                
+                try {
+                    const task = uploadBytesResumable(fileRef, file, { 
+                        contentType: file.type || 'text/html' 
+                    });
+
+                    await new Promise((resolve, reject) => {
+                        task.on('state_changed', (snapshot) => {
+                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            const overallProgress = ((i + progress / 100) / selectedFiles.length) * 100;
+                            
+                            progressBar.style.width = `${overallProgress}%`;
+                            progressText.textContent = `${overallProgress.toFixed(1)}%`;
+                        }, reject, async () => {
+                            const url = await getDownloadURL(task.snapshot.ref);
+                            uploadedFiles.push({
+                                name: file.name,
+                                url: url,
+                                size: file.size
+                            });
+                            resolve();
+                        });
+                    });
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    status.innerHTML = `<div class="error">❌ Upload failed: ${error.message}</div>`;
+                    return;
+                }
+            }
+
+            // Display results
+            let resultHTML = '<div class="status">✅ Upload Complete!</div>';
+            resultHTML += '<h4>📁 Uploaded Files:</h4>';
+            uploadedFiles.forEach(file => {
+                resultHTML += `<p><strong>${file.name}:</strong> <a href="${file.url}" target="_blank" style="color: #00ff00;">${file.url}</a></p>`;
+            });
+            
+            status.innerHTML = resultHTML;
+        }
+
+        function generateDownloadLinks() {
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.innerHTML = `
+                <div class="status">
+                    <h4>🔗 Download Links:</h4>
+                    <p><strong>Backend Files:</strong></p>
+                    <ul>
+                        <li><a href="https://firebasestorage.googleapis.com/v0/b/ai-chatsy-390411.appspot.com/o/backend%2Findex.html" target="_blank" style="color: #00ff00;">Backend HTML</a></li>
+                        <li><a href="https://firebasestorage.googleapis.com/v0/b/ai-chatsy-390411.appspot.com/o/backend%2Fapi.js" target="_blank" style="color: #00ff00;">API JavaScript</a></li>
+                    </ul>
+                    <p><strong>Note:</strong> These are direct download links from Firebase Storage</p>
+                </div>
+            `;
+        }
+
+        // Drag and drop functionality
+        const uploadArea = document.querySelector('.upload-area');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.style.background = 'rgba(0, 255, 0, 0.1)';
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.style.background = '';
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.style.background = '';
+            selectedFiles = Array.from(e.dataTransfer.files);
+            displayFiles();
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,20 @@
+{
+  "name": "chatsy-firebase-backend",
+  "version": "1.0.0",
+  "description": "Firebase Backend for Chatsy App",
+  "main": "index.js",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^4.9.0"
+  },
+  "engines": {
+    "node": "18"
+  }
+}
+

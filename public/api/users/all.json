@@ -1,0 +1,19 @@
+{
+  "status": true,
+  "message": "Users retrieved successfully",
+  "data": [
+    {
+      "id": "user_1",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "subscription": "premium"
+    },
+    {
+      "id": "user_2",
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "subscription": "free"
+    }
+  ]
+}
+

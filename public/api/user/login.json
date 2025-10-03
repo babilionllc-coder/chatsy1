@@ -1,0 +1,13 @@
+{
+  "status": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "id": "mock_user_123",
+      "email": "test@example.com",
+      "name": "Test User"
+    },
+    "token": "mock_token_123"
+  }
+}
+
